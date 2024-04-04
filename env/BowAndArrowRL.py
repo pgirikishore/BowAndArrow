@@ -36,6 +36,6 @@ model = PPO("CnnPolicy", env, verbose=1, device="mps", tensorboard_log=logdir)
 for i in range(1, 30):
     # Create the PPO model
     model.learn(total_timesteps=TIMESTEPS, reset_num_timesteps=False, tb_log_name="PPO")
-
+    print("hello")
     # Save the trained model
     model.save(f"{models_dir}/{TIMESTEPS * i}")
