@@ -1,10 +1,11 @@
 import random
 import sys
 
-import gym
+import gymnasium as gym
 import numpy as np
 import pygame
-from gym import spaces
+from gymnasium import spaces
+from gymnasium.utils import seeding
 
 
 class BowAndArrowEnv(gym.Env):
@@ -12,6 +13,8 @@ class BowAndArrowEnv(gym.Env):
         super(BowAndArrowEnv, self).__init__()
 
         # Initialize Pygame
+        self.cooldown_counter = 0
+        self.cooldown = 0
         pygame.init()
 
         # Set up the screen
@@ -76,56 +79,57 @@ class BowAndArrowEnv(gym.Env):
         return self._get_observation()
 
     def step(self, action):
-        # Perform action
-        # if action == 1:
-        #     self.character_y -= self.character_speed
-        # elif action == 2:
-        #     self.character_y += self.character_speed
-        if action == 1:  # Shoot arrow
-            if self.arrows_used < self.max_arrows:
-                # Shoot arrow
-                arrow_x = 55
-                arrow_y = (self.character_y + self.character_img.get_height() // 2) - 10
-                self.arrows.append([arrow_x, arrow_y])
-                self.arrows_used += 1
+        reward = 0
+        done = False
 
-        # Move the character within bounds
-        self.character_y = max(0, min(self.character_y, self.HEIGHT - self.character_img.get_height()))
+        # Decrement cooldown if it's above 0
+        if self.cooldown > 0:
+            self.cooldown -= 1
+            
+        # Action 1: Shoot arrow
+        if action == 1 and self.arrows_used < self.max_arrows and self.cooldown == 0:
+            # Implement shooting arrow logic
+            self.cooldown_counter = 5
+            arrow_x = 55
+            arrow_y = (self.character_y + self.character_img.get_height() // 2) - 10
+            self.arrows.append([arrow_x, arrow_y])
+            self.arrows_used += 1
+            # Initially, no reward for shooting, reward is given based on hitting or missing targets
 
-        # Spawn new balloons randomly
-        self._spawn_balloon()
-
-        # Spawn yellow balloons randomly
-        self._spawn_yellow_balloon()
-
-        # Move the balloons
+        # Update the game state: Move balloons and arrows
         for balloon in self.balloons:
             balloon[1] -= self.balloon_speed
+            if balloon[1] < 0:  # Balloon went off-screen (missed)
+                reward -= 1  # Penalize for missing balloons
 
-        # Move the yellow balloons
-        for yellow_balloon in self.yellow_balloons:
-            yellow_balloon[1] -= self.balloon_speed
-
-        # Move the arrows
         for arrow in self.arrows:
             arrow[0] += self.arrow_speed
+            if arrow[0] > self.WIDTH:  # Arrow went off-screen
+                self.arrows.remove(arrow)
 
-        # Handle collisions
-        self._handle_collisions()
+        # Handle collisions and assign rewards
+        for arrow in self.arrows[:]:
+            arrow_rect = pygame.Rect(arrow[0], arrow[1], self.arrow_img.get_width(), self.arrow_img.get_height())
+            for balloon in self.balloons[:]:
+                balloon_rect = pygame.Rect(balloon[0], balloon[1], self.balloon_img.get_width(),
+                                           self.balloon_img.get_height())
+                if arrow_rect.colliderect(balloon_rect):
+                    self.balloons.remove(balloon)
+                    self.arrows.remove(arrow)
+                    reward += 5  # Reward for hitting a balloon
 
-        # Calculate current reward
-        if self.score - self.curr_reward != 0:
-            reward = self.score - self.curr_reward * 100000
-            self.curr_reward = self.score
-        else:
-            reward = -1
-        if action == 0:
-            reward = 0
+        # Check for game over condition
+        if self.arrows_used == self.max_arrows and len(self.arrows) == 0:
+            done = True
 
-        # Get observation, reward, done, info
+        # Update the score based on the reward obtained in this step
+        self.score += reward
+
+        # Get the current game state as observation
         observation = self._get_observation()
-        done = (self.arrows_used == self.max_arrows and len(self.arrows) == 0) or self.score == 15
-        info = {}
+
+        # Additional info (optional)
+        info = {"arrows_left": self.max_arrows - self.arrows_used, "score": self.score}
 
         return observation, reward, done, info
 
@@ -185,7 +189,7 @@ class BowAndArrowEnv(gym.Env):
                 if arrow_rect.colliderect(balloon_rect):
                     self.balloons.remove(balloon)
                     if arrow in self.arrows:
-                      self.arrows.remove(arrow)
+                        self.arrows.remove(arrow)
                     self.score += 1  # Add score for hitting red balloons
                     break
 
@@ -204,8 +208,8 @@ class BowAndArrowEnv(gym.Env):
         sys.exit()
 
     def seed(self, seed=None):
-        # Optionally implement seeding logic here
-        pass
+        self.np_random, seed = seeding.np_random(seed)
+        return [seed]
 
 
 # Create instance of the custom environment
