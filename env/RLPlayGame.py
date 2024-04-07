@@ -5,6 +5,8 @@ from stable_baselines3.common.evaluation import evaluate_policy
 
 from BowAndArrowEnv import BowAndArrowEnv
 from PreprocessObservation import PreprocessObservation
+import matplotlib.pyplot as plt
+
 
 import os
 os.environ['MKL_THREADING_LAYER'] = 'GNU'
@@ -34,17 +36,31 @@ def evaluate_model(model, eval_env, n_eval_episodes=10):
 total_episodes = 1000
 # Evaluates the model every 100 episodes
 eval_interval = 100
+# Initialize an empty list to store scores
+episode_scores = []
 
 for episode in range(total_episodes):
     obs = env.reset()
     done = False
+    episode_score = 0
     while not done:
         action, _states = model.predict(obs, deterministic=True)
         obs, reward, done, info = env.step(action)
-        env.render()
+        episode_score += reward  # Update the episode score
+        # env.render()
+
+    episode_scores.append(episode_score)  # Store the episode score
+    print(f"Episode {episode + 1} - Score: {episode_score}")
 
     if (episode + 1) % eval_interval == 0:
         print(f"Evaluating at episode {episode + 1}")
         evaluate_model(model, env)  # Evaluate the model
+
+# Plot the scores
+plt.plot(range(1, total_episodes + 1), episode_scores)
+plt.xlabel('Episode')
+plt.ylabel('Score')
+plt.title('Training Progress')
+plt.show()
 
 model.save("ppo_bowandarrow_final")
