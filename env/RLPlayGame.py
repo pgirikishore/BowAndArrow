@@ -6,6 +6,7 @@ from stable_baselines3.common.evaluation import evaluate_policy
 from BowAndArrowEnv import BowAndArrowEnv
 from PreprocessObservation import PreprocessObservation
 import matplotlib.pyplot as plt
+from BowAndArrowRL import CustomCNN
 
 
 import os
@@ -20,12 +21,18 @@ def make_env():
 
 env = make_vec_env(lambda: make_env(), n_envs=1)
 env = VecFrameStack(env, n_stack=4)
+policy_kwargs = dict(
+    features_extractor_class=CustomCNN,
+    features_extractor_kwargs=dict(features_dim=512),
+)
 
 # Load the model if it exists, otherwise initialize a new one
 try:
     model = PPO.load("ppo_bowandarrow.zip")
 except ValueError:
-    model = PPO("CnnPolicy", env, verbose=1)
+    model = PPO("CnnPolicy", env, policy_kwargs=policy_kwargs, verbose=1, learning_rate=2.5e-4, batch_size=64,
+                n_steps=2048)
+    model.learn(total_timesteps=10000)
 
 
 def evaluate_model(model, eval_env, n_eval_episodes=10):
@@ -40,6 +47,7 @@ eval_interval = 100
 episode_scores = []
 
 for episode in range(total_episodes):
+    print(f"Episode {episode + 1}/{total_episodes}")
     obs = env.reset()
     done = False
     episode_score = 0

@@ -68,6 +68,7 @@ class BowAndArrowEnv(gym.Env):
         return self._get_observation(), info
 
     def step(self, action):
+        # print("Taking action:", action)
         reward = 0
         done = False
 
@@ -79,6 +80,7 @@ class BowAndArrowEnv(gym.Env):
 
         if len(self.arrows) == self.max_arrows and not self.arrows:
             done = True
+            print("Game over condition reached.")
 
         self.score += reward
 
@@ -93,6 +95,7 @@ class BowAndArrowEnv(gym.Env):
             balloon['position'][1] -= self.balloon_speed
             if balloon['position'][1] < 0:
                 self.balloons.remove(balloon)
+                # print("Balloon reached the top of the screen.")
 
         self._spawn_balloon()
 
@@ -112,13 +115,16 @@ class BowAndArrowEnv(gym.Env):
                     if balloon['color'] == 'red':
                         self.score += 1
                         self.balloons_hit.append(balloon)
+                        print("Red Balloon hit by arrow.")
                     else:
                         self.score -= 1
                         self.yellow_balloons_hit.append(balloon)
+                        print("Yellow Balloon hit by arrow.")
                     break
 
             if arrow[0] > self.WIDTH:
                 self.arrows.remove(arrow)
+                # print("Arrow reached end of screen.")
 
     def _spawn_balloon(self):
         if len(self.balloons) < self.max_balloons and random.randint(1, 50) == 1:
@@ -150,6 +156,7 @@ class BowAndArrowEnv(gym.Env):
         self.screen.blit(score_surface, (10, 10))
 
     def render(self, mode='human'):
+        print("Rendering game...")
         self._render_to_surface()  # Draw the game elements onto the surface
 
         if mode == 'rgb_array':
