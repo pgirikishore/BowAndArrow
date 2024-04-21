@@ -47,6 +47,7 @@ class BowAndArrowEnv(gym.Env):
         self.red_balloon_falling_speed = 3
         self.yellow_balloon_falling_speed = 3
         self.score = 0
+        self.arrows_used = 0
 
         self.font = pygame.font.Font(None, 36)
         self.clock = pygame.time.Clock()
@@ -64,6 +65,7 @@ class BowAndArrowEnv(gym.Env):
         self.balloons_hit = []
         self.yellow_balloons_hit = []
         self.score = 0
+        self.arrows_used = 0
         info = {}
         return self._get_observation(), info
 
@@ -72,13 +74,15 @@ class BowAndArrowEnv(gym.Env):
         reward = 0
         done = False
 
-        if action == 1 and len(self.arrows) < self.max_arrows:
+        if action == 1 and self.arrows_used < self.max_arrows:
             self.arrows.append([55, self.character_y + (self.character_img.get_height() // 2) - 10])
+            self.arrows_used += 1
 
         self._update_balloons()
         self._update_arrows()
+        print(self.arrows_used)
 
-        if len(self.arrows) == self.max_arrows and not self.arrows:
+        if self.arrows_used == self.max_arrows:
             done = True
             print("Game over condition reached.")
 

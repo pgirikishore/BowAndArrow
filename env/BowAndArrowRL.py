@@ -62,4 +62,5 @@ policy_kwargs = dict(
 model = PPO("CnnPolicy", env, policy_kwargs=policy_kwargs, verbose=1, learning_rate=2.5e-4, batch_size=64, n_steps=2048)
 
 model.learn(total_timesteps=10000)
-model.save("ppo_bowandarrow")
+
+model.save("ppo_bowandarrow-1.zip")
