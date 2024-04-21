@@ -5,6 +5,7 @@ import gym
 import numpy as np
 import pygame
 from gym import spaces
+import os
 
 
 class BowAndArrowEnv(gym.Env):
@@ -23,13 +24,19 @@ class BowAndArrowEnv(gym.Env):
         self.BACKGROUND_COLOR = (0, 197, 22)  # RGB value for #00C516
         self.WHITE = (255, 255, 255)
 
+        base_path = os.path.dirname(__file__)
+        image_dir = os.path.join(base_path, '..', '..', 'images')
+
+        # Change the working directory to the image directory
+        os.chdir(image_dir)
+
         # Load images
-        self.character_img = pygame.image.load("../../character_small.png")
-        self.balloon_img = pygame.image.load("../../balloon_small.png")
-        self.yellow_balloon_img = pygame.image.load("../../yellow_balloon_small.png")
-        self.arrow_img = pygame.image.load("../../arrow_small.png")
-        self.red_balloon_falling_img = pygame.image.load("../../red_balloon_falling_small.png")
-        self.yellow_balloon_falling_img = pygame.image.load("../../yellow_balloon_falling_small.png")
+        self.character_img = pygame.image.load("character_small.png")
+        self.balloon_img = pygame.image.load("balloon_small.png")
+        self.yellow_balloon_img = pygame.image.load("yellow_balloon_small.png")
+        self.arrow_img = pygame.image.load("arrow_small.png")
+        self.red_balloon_falling_img = pygame.image.load("red_balloon_falling_small.png")
+        self.yellow_balloon_falling_img = pygame.image.load("yellow_balloon_falling_small.png")
 
         # Set up game variables
         self.character_y = self.HEIGHT // 2
