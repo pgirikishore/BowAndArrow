@@ -24,12 +24,12 @@ class BowAndArrowEnv(gym.Env):
         self.WHITE = (255, 255, 255)
 
         # Load images
-        self.character_img = pygame.image.load("../character_small.png")
-        self.balloon_img = pygame.image.load("../balloon_small.png")
-        self.yellow_balloon_img = pygame.image.load("../yellow_balloon_small.png")
-        self.arrow_img = pygame.image.load("../arrow_small.png")
-        self.red_balloon_falling_img = pygame.image.load("../red_balloon_falling_small.png")
-        self.yellow_balloon_falling_img = pygame.image.load("../yellow_balloon_falling_small.png")
+        self.character_img = pygame.image.load("../../character_small.png")
+        self.balloon_img = pygame.image.load("../../balloon_small.png")
+        self.yellow_balloon_img = pygame.image.load("../../yellow_balloon_small.png")
+        self.arrow_img = pygame.image.load("../../arrow_small.png")
+        self.red_balloon_falling_img = pygame.image.load("../../red_balloon_falling_small.png")
+        self.yellow_balloon_falling_img = pygame.image.load("../../yellow_balloon_falling_small.png")
 
         # Set up game variables
         self.character_y = self.HEIGHT // 2
