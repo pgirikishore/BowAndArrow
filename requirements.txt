@@ -3,3 +3,6 @@ numpy==1.23.5
 pygame==2.5.2
 stable_baselines3==2.3.0
 torch==2.2.2
+torchvision
+matplotlib
+ipython
