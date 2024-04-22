@@ -175,6 +175,15 @@ from BowAndArrowEnv import BowAndArrowEnv
 
 
 class CNNPolicy(nn.Module):
+    """
+    Convolutional Neural Network policy class for reinforcement learning tasks. It implements a standard
+    CNN architecture with batch normalization and dropout for regularization.
+
+    Attributes:
+        input_shape (tuple): The shape of the input data.
+        num_actions (int): The number of possible actions the agent can take.
+        dropout_rate (float): The dropout rate used in the dropout layer to prevent overfitting.
+    """
     def __init__(self, input_shape, num_actions=2, dropout_rate=0.5):
         super(CNNPolicy, self).__init__()
         self.conv1 = nn.Conv2d(in_channels=input_shape[0], out_channels=32, kernel_size=8, stride=4)
@@ -203,6 +212,15 @@ class CNNPolicy(nn.Module):
             return int(np.prod(output.size()))
 
     def forward(self, x):
+        """
+        Performs a forward pass through the network.
+
+        Args:
+            x (torch.Tensor): Input tensor.
+
+        Returns:
+            torch.Tensor: The log probabilities of each action.
+        """
         x = F.relu(self.bn1(self.conv1(x)))  # Apply BatchNorm after conv1
         x = self.pool1(x)
 
@@ -220,10 +238,35 @@ class CNNPolicy(nn.Module):
 
 
 def preprocess(obs):
+    """
+    Preprocesses the raw observations from the environment before they are fed into the neural network.
+
+    Args:
+        obs (np.array): The raw observation from the environment.
+
+    Returns:
+        np.array: The preprocessed observation suitable for model input.
+    """
     return (obs.transpose((2, 0, 1)) / 255.0).astype(np.float32)
 
 
 def train(env, policy_net, episodes, learning_rate=1e-2, gamma=0.99, start_eps=1.0, end_eps=0.01, eps_decay=200):
+    """
+    Trains the policy network on the environment across a specified number of episodes.
+
+    Args:
+        env (BowAndArrowEnv): The environment on which the agent is trained.
+        policy_net (CNNPolicy): The policy network that decides the actions to be taken.
+        episodes (int): The number of episodes over which to train the agent.
+        learning_rate (float): The learning rate for the optimizer.
+        gamma (float): The discount factor for future rewards.
+        start_eps (float): The starting value for epsilon in epsilon-greedy action selection.
+        end_eps (float): The minimum value of epsilon after decay.
+        eps_decay (float): The rate at which epsilon is decayed during training.
+
+    Returns:
+        None: This function is used to train the model and does not return a value.
+    """
     optimizer = optim.Adam(policy_net.parameters(), lr=learning_rate)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=10, factor=0.5, min_lr=1e-4,
                                                      verbose=True)

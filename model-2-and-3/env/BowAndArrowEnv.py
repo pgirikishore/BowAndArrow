@@ -293,7 +293,15 @@ import os
 
 
 class BowAndArrowEnv(gym.Env):
+    """
+    A custom environment for a Bow and Arrow game using the Pygame library and integrated with OpenAI Gym.
+
+    The environment includes a bow character that can shoot arrows at moving balloons to score points.
+    """
     def __init__(self):
+        """
+        Initializes the environment, setting up Pygame, the display window, game entities, and game variables.
+        """
         super(BowAndArrowEnv, self).__init__()
 
         # Initialize Pygame
@@ -354,6 +362,12 @@ class BowAndArrowEnv(gym.Env):
         self.running = True
 
     def reset(self):
+        """
+        Resets the environment to an initial state and returns an initial observation.
+
+        Returns:
+            np.array: The initial state observation of the environment.
+        """
         # Reset game state
         self.character_y = 0
         self.arrows = []
@@ -368,6 +382,19 @@ class BowAndArrowEnv(gym.Env):
         return self._get_observation()
 
     def step(self, action):
+        """
+        Executes a given action, updates the state of the environment, and returns the next observation, reward, done flag, and additional info.
+
+        Args:
+            action (int): The action to take (0 for no action, 1 to shoot an arrow).
+
+        Returns:
+            tuple: A tuple containing:
+                - np.array: The next state observation of the environment.
+                - float: The reward obtained from the previous action.
+                - bool: A flag indicating if the episode has ended.
+                - dict: Additional information.
+        """
         # Perform action
         # if action == 1:
         #     self.character_y -= self.character_speed
@@ -423,6 +450,9 @@ class BowAndArrowEnv(gym.Env):
         return observation, reward, done, info
 
     def render(self):
+        """
+        Renders the current state of the environment to the screen.
+        """
         # Draw everything
         self.screen.fill(self.BACKGROUND_COLOR)
         self.screen.blit(self.character_img, (0, self.character_y))
@@ -440,6 +470,9 @@ class BowAndArrowEnv(gym.Env):
         pygame.display.flip()
 
     def _spawn_balloon(self):
+        """
+        Updates the positions of all dynamic entities in the environment.
+        """
         if self.balloons_used < self.max_balloons and random.randint(1, 10) == 1:
             x = random.randint(150, self.WIDTH - 50)
             y = self.HEIGHT + 50
@@ -458,6 +491,9 @@ class BowAndArrowEnv(gym.Env):
     #         self.yellow_balloons_used += 1
 
     def _handle_collisions(self):
+        """
+        Handles collisions between arrows and balloons, updating scores and removing objects as necessary.
+        """
         # Handle collision between arrows and yellow balloons
         for arrow in self.arrows[:]:
             arrow_rect = pygame.Rect(arrow[0], arrow[1], self.arrow_img.get_width(), self.arrow_img.get_height())
@@ -488,17 +524,22 @@ class BowAndArrowEnv(gym.Env):
                 self.arrows.remove(arrow)
 
     def _get_observation(self):
+        """
+        Captures the current state of the Pygame window and returns it as an observation.
+
+        Returns:
+            np.array: An array representation of the current game screen.
+        """
         # Convert game screen to observation
         observation = pygame.surfarray.array3d(self.screen)
         return observation
 
     def close(self):
+        """
+        Cleans up and closes the Pygame environment.
+        """
         pygame.quit()
         sys.exit()
-
-    def seed(self, seed=None):
-        # Optionally implement seeding logic here
-        pass
 
 
 # Create instance of the custom environment

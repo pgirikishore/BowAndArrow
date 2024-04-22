@@ -47,9 +47,28 @@ policy_net.load_state_dict(torch.load(model_path, map_location=torch.device('mps
 policy_net.eval()
 
 def preprocess(obs):
+    """
+    Preprocess the observation obtained from the environment.
+
+    Args:
+        obs (np.array): The original observation from the environment in HWC format.
+
+    Returns:
+        np.array: The preprocessed observation in CHW format normalized to [0, 1].
+    """
     return (obs.transpose((2, 0, 1)) / 255.0).astype(np.float32)
 
 def play_game(env, policy_net):
+    """
+    Plays a game using a pre-trained neural network policy.
+
+    Args:
+        env (BowAndArrowEnv): The game environment.
+        policy_net (CNNPolicy): The trained neural network policy.
+
+    The function processes the game state, uses the policy network to decide on the best action,
+    executes the action, and renders the game environment, continuing until the game ends.
+    """
     state = env.reset()
     state = preprocess(state)  # Preprocess initial state
     done = False
