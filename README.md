@@ -60,7 +60,7 @@ Contains the main game logic, including user inputs and game object management.
    ```bash
    pip install -r requirements.txt
    ```
-3. Download the trained models from the one drive link (), unzip it and add it to the root folder.
+3. Download the trained models from the google drive link (https://drive.google.com/drive/folders/1J4p6OlAoJvnTkvi_kAuhiFXMjwM4gJOK?usp=sharing), unzip it and add it to the root folder.
 4. Run the simulation:
    ```bash
    python3 /{model-name}/env/RLPlayGame.py 
