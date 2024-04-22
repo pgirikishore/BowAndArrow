@@ -15,8 +15,10 @@ BowAndArrow is a reinforcement learning (RL) project exploring agent interaction
 ### Reinforcement Learning Environment
 - **Integration:** Custom RL environment integrated with OpenAI Gym.
 - **Models Explored:**
-  - **Model 1:** Deep Q-Networks (DQN)
+  - **Model 1:** MlpPolicy, CnnPolicy, PPO and DQN
   - **Model 2:** Monte Carlo Reinforce with a custom CNN
+  - **Model 3:** Monte Carlo Reinforce with a custom CNN
+  - **Model 4:** Linear QNet(Deep Q-Learning)
 
 ### Technical Stack
 - **Libraries:** Pygame, OpenAI Gym, Stable Baselines3, PyTorch
